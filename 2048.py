@@ -23,7 +23,6 @@ id = 0
 #Move each tile with a method, and update the grid after each tile is moved so that the next tile to move will have up to date information
 #about the locations of other tiles.
 #Store each tile object in a dictionary in order to name them. Add a new object to the dictionary whenever a new tile is created.
-#Give each tile a tileID. When a tile is merged, create a new tile with a new tileID.
 
 #Switches normalCords to ListCords
 def toListCords(normCords):
@@ -72,8 +71,6 @@ def sortList(dxn):
         objList.append(getObj(cordsList[i]))
         sortedDict.update({keysList[i]: objList[i]})
     return sortedDict
-
-
 
 #Creates a class for each tile, stores cords as a tuple and val as an int.
 class tile:
