@@ -35,7 +35,7 @@ def toListCords(normCords):
 def editVal(normCords, val):
     grid[toListCords(normCords)[0]][toListCords(normCords)[1]] = val
 
-#Creates a class for each tile, stores cords as a tuple and val as an int.
+#Creates a class for each tile, stores cords as a tuple and val as an int. 
 class tile:
     def __init__(self, x, y, val):
         global id
