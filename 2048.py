@@ -230,7 +230,7 @@ if __name__ == "__main__":
     endGame = False
     score = 0
     #Create first tiles
-    tile(randrange(2, 5, 2)).editGrid()
+    tile(randrange(2, 5, 2)).editGrid() 
     tile(randrange(2, 5, 2)).editGrid()
 
     main()
