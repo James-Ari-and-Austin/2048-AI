@@ -103,11 +103,11 @@ def getDxn():
 class tile:
 
     #Creates relevant variables, adds new object to tiles dict, and updates global id variable.
-    def __init__(self):
+    def __init__(self, val):
         global id
         self.normCords = openSpot()
         self.oldNormCords = self.normCords
-        self.val = randrange(2, 4, 2)
+        self.val = val
         self.id = id
         id += 1
         tiles.update({self.id: self})
@@ -174,17 +174,23 @@ class tile:
     def moveLoop(self, dxn):
         self.oldNormCords = self.normCords
         while True:
+            for i in range(len(grid)):
+                print(grid[i])
+            print("--------------------")
             if self.canMove(dxn) == True:
                 self.moveCords(dxn)
             elif self.canMove(dxn) == "Merge":
-                self.val *= 2
+                print("Merging Tile", self.normCords)
+                self.val = 2 * self.val
                 self.moveCords(dxn)
                 self.delTile()
                 self.editGrid()
+                if gridVal(self.normCords) != self.val: print("Giga Error Merge")
                 break
             elif self.canMove(dxn) == False:
                 if self.oldNormCords is not self.normCords:
                     self.editGrid()
+                if gridVal(self.normCords) != self.val: print("Giga Error")
                 break
 
 #Searches for and selects tile overwritten by merge. Tile not deleted in this function because the dict is currently being iterated on.
@@ -192,6 +198,7 @@ class tile:
         for key in tiles:
             if tiles[key].normCords == self.normCords and tiles[key].val == self.val / 2:
                 deadTiles.append(key)
+        print(len(deadTiles))
 
 def main():
     #Game loop
@@ -205,11 +212,14 @@ def main():
 
         for key in tiles:
             tiles[key].moveLoop(dxn)
-            #KNOWN BUG: Merges frequently don't occur when there are a lot of blocks concentrated. 
+            #KNOWN BUG: Merges frequently don't occur when there are a lot of blocks concentrated.
+            #This is because the values of the tiles are not updating correctly, even though they are displaying correctly on the grid.
+            #The value for a given tile is fluctuating within a given turn.
+            #I think I'm not doubling it soon enough, because it seems that the val doubles after it is done checking merge.
         if len(deadTiles) > 0:
             for tile in deadTiles:
                 tiles.pop(deadTiles[tile])
-        tile().editGrid()
+        #tile(randrange(2, 4, 2)).editGrid()
 
 if __name__ == "__main__":
     #First Time Setup
@@ -220,7 +230,10 @@ if __name__ == "__main__":
     deadTiles = []
     id = 0
     #Create first tiles
-    tile().editGrid()
-    tile().editGrid()
+    tile(randrange(2, 5, 2)).editGrid()
+    tile(randrange(2, 5, 2)).editGrid()
+    tile(randrange(2, 5, 2)).editGrid()
+    tile(randrange(2, 5, 2)).editGrid()
+    tile(randrange(2, 5, 2)).editGrid()
 
     main()
