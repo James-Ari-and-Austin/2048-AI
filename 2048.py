@@ -13,6 +13,9 @@
 
 #Tiles are created unnamed, but stored in a dictionary with a self.id value as their key. To reference an object, use the dictionary.
 
+#KNOWN BUG: When merging tiles, tiles do not cease to move after merge. [2, 2, 4, 8] -> [0, 0, 0, 16]
+
+
 #Dependencies
 from random import randrange
 
@@ -74,12 +77,16 @@ def sortList(dxn):
 
 #Finds an open spot on the grid and returns the cords in normCords form.
 def openSpot():
-    i = True
-    while i == True:
-        x = randrange(1, 4)
-        y = randrange(1, 4)
+    vals = []
+    for i in range(4):
+        for j in range(4):
+            vals.append(grid[i][j])
+    while 0 in vals:
+        x = randrange(1, 5)
+        y = randrange(1, 5)
         if gridVal((x, y)) == 0:
             return (x, y)
+    endGame = True
 
 #Translates direction inputs from wsad to up, down, left, right
 def getDxn():
@@ -173,53 +180,44 @@ class tile:
 #Moves a tile in given direction as many times as is possible
     def moveLoop(self, dxn):
         self.oldNormCords = self.normCords
+        global score
         while True:
-            for i in range(len(grid)):
-                print(grid[i])
-            print("--------------------")
             if self.canMove(dxn) == True:
                 self.moveCords(dxn)
             elif self.canMove(dxn) == "Merge":
-                print("Merging Tile", self.normCords)
                 self.val = 2 * self.val
                 self.moveCords(dxn)
                 self.delTile()
                 self.editGrid()
-                if gridVal(self.normCords) != self.val: print("Giga Error Merge")
+                score += self.val
                 break
             elif self.canMove(dxn) == False:
-                if self.oldNormCords is not self.normCords:
-                    self.editGrid()
-                if gridVal(self.normCords) != self.val: print("Giga Error")
+                self.editGrid()
                 break
 
 #Searches for and selects tile overwritten by merge. Tile not deleted in this function because the dict is currently being iterated on.
     def delTile(self):
-        for key in tiles:
+        for key in list(tiles.keys()):
             if tiles[key].normCords == self.normCords and tiles[key].val == self.val / 2:
-                deadTiles.append(key)
-        print(len(deadTiles))
+                del tiles[key]
 
 def main():
+    global tile
+    global score
     #Game loop
-    while True:
+    while endGame == False:
         for i in range(len(grid)):
             print(grid[i])
+        print("Score:", score)
         dxn = getDxn()
         deadTiles = []
         tiles = sortList(dxn)
-        global tile
 
         for key in tiles:
             tiles[key].moveLoop(dxn)
-            #KNOWN BUG: Merges frequently don't occur when there are a lot of blocks concentrated.
-            #This is because the values of the tiles are not updating correctly, even though they are displaying correctly on the grid.
-            #The value for a given tile is fluctuating within a given turn.
-            #I think I'm not doubling it soon enough, because it seems that the val doubles after it is done checking merge.
-        if len(deadTiles) > 0:
-            for tile in deadTiles:
-                tiles.pop(deadTiles[tile])
-        #tile(randrange(2, 4, 2)).editGrid()
+        tile(randrange(2, 5, 2)).editGrid()
+
+    print("Game Over! Your score is", score)
 
 if __name__ == "__main__":
     #First Time Setup
@@ -229,10 +227,9 @@ if __name__ == "__main__":
     tiles = {}
     deadTiles = []
     id = 0
+    endGame = False
+    score = 0
     #Create first tiles
-    tile(randrange(2, 5, 2)).editGrid()
-    tile(randrange(2, 5, 2)).editGrid()
-    tile(randrange(2, 5, 2)).editGrid()
     tile(randrange(2, 5, 2)).editGrid()
     tile(randrange(2, 5, 2)).editGrid()
 
